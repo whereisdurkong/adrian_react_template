@@ -1,0 +1,98 @@
+.btn {
+  --on-fill: #fff;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--h);
+  padding: 0 var(--px);
+  border: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  font-family: var(--font);
+  font-size: var(--fs);
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  transition: transform var(--duration, 200ms) var(--ease, ease);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--on-fill);
+  outline-offset: -4px;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.sm {
+  --h: 36px;
+  --px: 18px;
+  --fs: 13px;
+}
+.md {
+  --h: 48px;
+  --px: 26px;
+  --fs: 15px;
+}
+.lg {
+  --h: 56px;
+  --px: 32px;
+  --fs: 16px;
+}
+
+.solid {
+  background: var(--text-primary, #111);
+  color: var(--bg, #fff);
+}
+
+.outline {
+  background: var(--surface, #fff);
+  color: var(--text-primary, #111);
+  box-shadow: inset 0 0 0 1.5px var(--border, #ccc);
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  /* Force it to stay inside */
+  max-width: 100%;
+  max-height: 100%;
+}
+.content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  transition: color 300ms ease 150ms;
+}
+
+.btn:is(:hover, :focus-visible, :active) .content {
+  color: var(--on-fill);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas {
+    display: none;
+  }
+}

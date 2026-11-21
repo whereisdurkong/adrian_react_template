@@ -1,0 +1,348 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  max-width: 1000px;
+  color: var(--text-primary);
+  font-family: var(--font);
+}
+
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.lead {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* Jump nav */
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.jumpLink {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform var(--duration) var(--ease),
+    opacity var(--duration) var(--ease);
+}
+
+.jumpLink:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.jumpLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Component section */
+.component {
+  scroll-margin-top: 24px;
+}
+
+.componentTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.desc {
+  max-width: 620px;
+  margin: 6px 0 28px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.block {
+  margin-bottom: 24px;
+}
+
+.blockTitle {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* White card on the gray panel */
+.card {
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto; /* wide content scrolls inside the card */
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 32px;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.demo {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pair {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.fullDemo {
+  width: min(360px, 100%);
+}
+
+/* Loader preview: the Loader is position: fixed, so inside the showcase
+   it is pinned to this box instead of covering the whole screen.
+   The overlay tint is removed so the loader sits directly on the card. */
+.preview {
+  position: relative;
+  /* Fixed width on purpose: the parent cell shrink-wraps its content, so a
+     percentage width here collapses to 0 and the loader disappears. */
+  width: 420px;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .preview {
+    width: min(420px, calc(100vw - 120px));
+    min-width: 240px;
+  }
+}
+
+.preview > [role="status"] {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: transparent;
+}
+
+/* Toast preview: fixed width for the same shrink-wrap reason as .preview */
+.toastDemo {
+  width: 380px;
+}
+
+@media (max-width: 900px) {
+  .toastDemo {
+    width: min(380px, calc(100vw - 120px));
+    min-width: 240px;
+  }
+}
+
+/* DeleteModal preview: panel on a dim layer, like the real thing */
+.modalDemo {
+  display: flex;
+  justify-content: center;
+  width: 488px;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-dark) 55%, transparent);
+}
+
+@media (max-width: 900px) {
+  .modalDemo {
+    width: min(488px, calc(100vw - 120px));
+    min-width: 240px;
+    padding: 16px;
+  }
+}
+
+/* Modal previews: panel on a dim layer, like the real thing */
+.wideDemo {
+  display: flex;
+  justify-content: center;
+  width: 808px;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-dark) 60%, transparent);
+}
+
+@media (max-width: 900px) {
+  .wideDemo {
+    width: min(808px, calc(100vw - 120px));
+    min-width: 240px;
+    padding: 16px;
+  }
+}
+
+/* Table demo cells */
+.page .num {
+  text-align: right;
+  font-family: var(--mono);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.status {
+  --dot: var(--text-muted);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--dot);
+}
+
+.paid {
+  --dot: var(--green);
+  background: var(--green-soft);
+}
+
+.pending {
+  --dot: var(--blue);
+  background: var(--blue-soft);
+}
+
+.failed {
+  --dot: var(--red);
+  background: var(--red-soft);
+}
+
+/* Image / video placeholders (theme variables only) */
+.artImage {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 22% 24%, var(--accent) 0, transparent 34%),
+    radial-gradient(circle at 82% 88%, var(--purple-soft) 0, transparent 46%),
+    linear-gradient(135deg, var(--purple-dark), var(--purple));
+}
+
+.artVideo {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(
+      circle at 50% 130%,
+      color-mix(in srgb, var(--accent) 35%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(135deg, var(--surface-dark), var(--surface-dark-2));
+}
+
+.play {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--surface-dark);
+  cursor: pointer;
+  transition: transform var(--duration) var(--ease);
+}
+
+.play:hover {
+  transform: scale(1.06);
+}
+
+.play:focus-visible {
+  outline: 2px solid var(--text-on-dark);
+  outline-offset: 3px;
+}
+
+.previewSm {
+  height: 140px;
+}
+
+.previewMd {
+  height: 280px;
+}
+
+.previewLg {
+  height: 420px;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .page {
+    gap: 36px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .row {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+  }
+}

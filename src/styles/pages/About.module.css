@@ -1,0 +1,46 @@
+.page { max-width: 740px; display: flex; flex-direction: column; gap: 40px; }
+
+.title { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+
+.lead {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-top: -20px;
+}
+
+.section { display: flex; flex-direction: column; gap: 16px; }
+.sectionTitle { font-size: 18px; font-weight: 700; }
+
+.stackGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.stackCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stackName  { font-weight: 700; font-size: 15px; }
+.stackRole  { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.stackVer   { font-size: 11px; color: var(--text-muted); font-family: var(--mono); margin-top: 10px; }
+
+.codeCard {
+  background: var(--surface-dark);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+}
+
+.pre {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.8;
+  overflow-x: auto;
+}

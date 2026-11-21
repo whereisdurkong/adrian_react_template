@@ -1,0 +1,237 @@
+/* ── Dialog: full-screen dim layer, the panel sits in the middle ──
+   The scrim lives on the dialog itself (not ::backdrop) so it can use the
+   theme variables in every browser. */
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--surface-dark) 60%, transparent);
+  color: var(--text-primary);
+}
+
+.dialog[open] {
+  display: flex;
+  animation: dialog-fade 200ms var(--ease) both;
+}
+
+.dialog::backdrop {
+  background: transparent;
+}
+
+/* ── Panel: white card, big radius, soft shadow ── */
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(440px, 100%);
+  padding: 48px 32px 28px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  font-family: var(--font);
+  animation: panel-in 260ms var(--ease) both;
+}
+
+/* Round close button, top right */
+.close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+/* ── Icon: solid red core with two soft halo rings ──
+   The halos are translucent mixes of --red, so they work on any surface. */
+.icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 28px;
+  border-radius: var(--radius-full);
+  background: var(--red);
+  color: var(--surface-dark);
+  box-shadow:
+    0 0 0 10px color-mix(in srgb, var(--red) 20%, transparent),
+    0 0 0 20px color-mix(in srgb, var(--red) 10%, transparent);
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.description {
+  max-width: 340px;
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* What is being deleted */
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  margin-top: 20px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.itemName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Buttons: pills, same height ── */
+.actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 28px;
+}
+
+.btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: var(--radius-full);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform var(--duration) var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cancel {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+}
+
+/* Dark text on --red keeps contrast above 4.5:1 in both themes */
+.confirm {
+  background: var(--red);
+  border: 1.5px solid var(--red);
+  color: var(--surface-dark);
+}
+
+.btn:focus-visible,
+.close:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+.spin {
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dialog-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Mobile: tighter padding, stacked buttons (primary action first) ── */
+@media (max-width: 900px) {
+  .panel {
+    padding: 44px 20px 20px;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open],
+  .panel,
+  .spin {
+    animation: none;
+  }
+
+  .btn {
+    transition: none;
+  }
+
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+}

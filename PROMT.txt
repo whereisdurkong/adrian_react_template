@@ -1,0 +1,48 @@
+Create a new page for my existing React project. Follow every rule below.
+
+## The page
+- Page name: [PAGE NAME, e.g. Nutrition]
+- What it shows / does: [DESCRIBE THE CONTENT AND LAYOUT]
+- Custom shapes, colors or style I want: [DESCRIBE, or "use the theme"]
+- Add to the sidebar: [yes / no]
+
+## My project
+- React (JSX, no TypeScript), Vite, react-router-dom v7, CSS Modules, Phosphor icons (@phosphor-icons/react). No Tailwind.
+- Pages: src/pages/Name.jsx. Styles: src/styles/pages/Name.module.css.
+- Routes live in src/router.jsx. Pages are loaded with lazy(), and a Suspense loader is already set up.
+- Sidebar items are in the navItems array in src/components/layout/Sidebar.jsx, each with a Phosphor icon.
+- Layout: dark sidebar, rounded light panel, white cards. The mobile breakpoint is 900px.
+
+## Day/night rules (most important)
+My theme is switched by data-theme="dark" on the <html> element. Colors are CSS variables in src/styles/variables.css. Dark values are in the :root[data-theme="dark"] block.
+
+1. Never hardcode colors. No #fff, #111, rgb(), or named colors in CSS or in SVG attributes. Always use var(--name).
+2. Use these existing variables:
+   - Surfaces: --bg, --panel-bg, --surface, --surface-dark, --surface-dark-2
+   - Text: --text-primary, --text-secondary, --text-muted (--text-on-dark and --text-on-dark-secondary are for always-dark areas)
+   - Lines: --border, --border-dark
+   - Brand and data: --accent, --accent-dim, --accent-soft, --purple, --purple-soft, --purple-dark, --green, --green-soft, --red, --red-soft, --blue, --blue-soft
+   - Shadows: --shadow-sm, --shadow-md, --shadow-lg
+   - Shape and motion: --radius-sm/md/lg/xl/full, --font, --mono, --ease, --duration
+3. If I ask for a color that doesn't exist, add a named variable in BOTH places: the light value in :root and a dark value in :root[data-theme="dark"]. Show me those lines as a separate snippet for variables.css. Do not use a raw color in the page CSS.
+4. Dark values must stay readable: text contrast at least 4.5:1, and "soft" backgrounds should be translucent (rgba) in dark mode.
+5. Text on the lime --accent is always dark (#111 via a variable or a fixed dark token), in both themes.
+6. Custom shapes and SVG: style them with CSS classes using fill: var(--x) and stroke: var(--x), or use currentColor. Gradients use stop-color: var(--x). Shadows use my shadow variables.
+7. Canvas or chart libraries that need real color values: read them with getComputedStyle(document.documentElement).getPropertyValue("--name") and re-read when data-theme changes, using a MutationObserver (the same way my Palette page does).
+8. Don't add your own theme toggle or theme logic. The navbar toggle and useTheme hook already exist.
+
+## Quality rules
+- Responsive from 360px up. Wide content scrolls inside its own container.
+- Use Phosphor icons only, not emoji or text characters.
+- Keyboard-visible focus styles, labels on icon-only buttons, and proper semantic HTML.
+- Keep animations smooth: animate transform and opacity only.
+- Match the existing look: pill shapes, white cards on the gray panel, lime accent.
+
+## What to give me
+1. Page.jsx and Page.module.css as full files, with the folder path for each.
+2. The router.jsx lines to add (lazy import and route).
+3. The Sidebar.jsx navItems line and icon import (if sidebar = yes).
+4. Any new variables.css lines, light and dark (if needed).
+5. A short checklist of what to verify in light and dark mode.
+
+Only change what's needed. If you need to see a file I haven't pasted, ask me for it instead of guessing.

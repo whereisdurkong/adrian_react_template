@@ -1,0 +1,232 @@
+/* ── Region: fixed stack, bottom right ── */
+.region {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 300; /* above the Loader overlay (200) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  width: min(380px, calc(100vw - 48px));
+  pointer-events: none; /* only the toasts catch clicks */
+}
+
+.item {
+  width: 100%;
+  pointer-events: auto;
+  animation: toast-in 240ms var(--ease) both;
+}
+
+.leaving {
+  animation: toast-out 200ms var(--ease) both;
+}
+
+/* ── Card: same white card as the rest of the app, follows day/night ── */
+.toast {
+  --tone: var(--accent);
+
+  /* Default look (white card). success / error / info override these. */
+  --toast-bg: var(--surface);
+  --toast-line: var(--border);
+  --toast-fg: var(--text-primary);
+  --toast-fg-2: var(--text-secondary);
+  --toast-hover: var(--bg);
+  --toast-bar: var(--tone);
+  --toast-action-line: var(--border);
+
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--toast-bg);
+  border: 1px solid var(--toast-line);
+  box-shadow: var(--shadow-lg);
+  color: var(--toast-fg);
+  font-family: var(--font);
+}
+
+.success {
+  --tone: var(--green);
+}
+.error {
+  --tone: var(--red);
+}
+.info {
+  --tone: var(--blue);
+}
+
+/* Colored types: solid green / red / blue background.
+   Text is the always-dark surface color, which stays above 4.5:1
+   on all three tones in both themes. */
+.success,
+.error,
+.info {
+  --toast-bg: var(--tone);
+  --toast-line: transparent;
+  --toast-fg: var(--surface-dark);
+  --toast-fg-2: var(--surface-dark);
+  --toast-hover: color-mix(in srgb, var(--surface-dark) 12%, transparent);
+  --toast-bar: color-mix(in srgb, var(--surface-dark) 40%, transparent);
+  --toast-action-line: color-mix(in srgb, var(--surface-dark) 40%, transparent);
+}
+
+.icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  /* Dark chip in both themes: the colored icon keeps strong contrast on it,
+     which a tinted "soft" background would not on a white card. */
+  color: var(--tone);
+  background: var(--surface-dark);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  min-height: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--toast-fg);
+}
+
+.description {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--toast-fg-2);
+}
+
+/* ── Action: outlined pill, so no text sits on the lime accent ── */
+.action {
+  align-self: flex-start;
+  height: 30px;
+  margin-top: 10px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--toast-action-line);
+  background: transparent;
+  color: var(--toast-fg);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.action:hover {
+  background: var(--toast-hover);
+}
+
+/* Lime is too faint on a white card, so the focus ring uses the text color */
+.action:focus-visible,
+.close:focus-visible {
+  outline: 2px solid var(--toast-fg);
+  outline-offset: 2px;
+}
+
+.close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--toast-fg-2);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--toast-hover);
+  color: var(--toast-fg);
+}
+
+/* ── Time bar: scales down with transform only ── */
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--toast-bar);
+  transform-origin: left center;
+  animation-name: toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.item:hover .progress,
+.item:focus-within .progress {
+  animation-play-state: paused;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ── Mobile: full width along the bottom ── */
+@media (max-width: 900px) {
+  .region {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+    align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .leaving {
+    animation: none;
+  }
+
+  .progress {
+    display: none;
+  }
+}
