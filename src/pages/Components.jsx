@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  AppWindow,
   ArrowRight,
+  BellRinging,
+  CircleNotch,
+  CursorClick,
   DownloadSimple,
   Folder,
   Image as ImageIcon,
   Play,
   Plus,
+  Sparkle,
   Table,
   Trash,
   VideoCamera,
+  WarningCircle,
 } from "@phosphor-icons/react";
 
 // Adjust these two paths to wherever your buttons live
@@ -51,6 +57,11 @@ function useCssVar(name) {
 const cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const PREVIEW_CLASS = { sm: "previewSm", md: "previewMd", lg: "previewLg" };
+
+// Jump nav sizes (keep in sync with the CSS)
+const NAV_HEIGHT = 52;
+const NAV_GAP = 12;
+const NAVBAR_HEIGHT = 72; // your top navbar (--navbar-height)
 
 // Sample rows for the Modal table demo
 const INVOICES = [
@@ -102,6 +113,83 @@ export default function Components() {
   // Live Modal demos: "sm" | "md" | "lg" | "table" | "image" | "video" | null
   const [modal, setModal] = useState(null);
   const closeModal = () => setModal(null);
+
+  // Jump nav: which section is currently in view
+  const [active, setActive] = useState("");
+
+  // Jump nav follow: the slot keeps its place in the page, and the nav
+  // inside is moved down every frame so it stays below the navbar.
+  const slotRef = useRef(null);
+  const navRef = useRef(null);
+
+  useEffect(() => {
+    const slot = slotRef.current;
+    const nav = navRef.current;
+    if (!slot || !nav) return undefined;
+
+    // Find the scrolling ancestor (your panel); null means the window scrolls
+    let scroller = slot.parentElement;
+    while (scroller && scroller !== document.body) {
+      const s = getComputedStyle(scroller);
+      if (/(auto|scroll|overlay)/.test(s.overflowY)) break;
+      scroller = scroller.parentElement;
+    }
+    if (!scroller || scroller === document.body) scroller = null;
+    console.log("[jump nav] scroll container:", scroller ?? "window");
+
+    const page = slot.parentElement;
+    let raf;
+    let last = -1;
+
+    const tick = () => {
+      const base = scroller
+        ? Math.max(scroller.getBoundingClientRect().top, 0)
+        : 0;
+      const r = slot.getBoundingClientRect();
+      const pageEnd = page.getBoundingClientRect().bottom;
+      const max = pageEnd - r.top - NAV_HEIGHT - NAV_GAP - NAVBAR_HEIGHT;
+      const shift = Math.max(
+        0,
+        Math.min(base + NAVBAR_HEIGHT + NAV_GAP - r.top, max),
+      );
+
+      if (Math.abs(shift - last) > 0.5) {
+        nav.style.transform = `translate3d(0, ${shift}px, 0)`;
+        last = shift;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Jump nav: highlight the section currently in view
+  useEffect(() => {
+    const sections = document.querySelectorAll("[data-section]");
+    if (!sections.length) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-15% 0px -75% 0px" },
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const jumpTo = (e, id) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    setActive(id);
+  };
 
   const confirmDelete = () => {
     setDeleting(true);
@@ -202,6 +290,7 @@ export default function Components() {
     {
       id: "button",
       name: "Button",
+      icon: CursorClick,
       description:
         "Standard button. Variants: primary, secondary, ghost, dark, danger. Sizes: sm (32), md (40), lg (48).",
       sections: [
@@ -286,6 +375,7 @@ export default function Components() {
     {
       id: "button-animated",
       name: "ButtonAnimated",
+      icon: Sparkle,
       description:
         "Liquid-fill hover button, same sizes as Button. Variants: solid, outline. Hover to see the effect.",
       sections: [
@@ -388,6 +478,7 @@ export default function Components() {
     {
       id: "loader",
       name: "Loader",
+      icon: CircleNotch,
       description:
         "Loading animation. In the app it covers the whole screen; here it is shown inside a card. Sizes: sm, md, lg.",
       sections: [
@@ -407,6 +498,7 @@ export default function Components() {
     {
       id: "toast",
       name: "Toast",
+      icon: BellRinging,
       description:
         "Short notification that slides in at the bottom right (full width on mobile). Types: default, success, error, info. Hover or focus a toast to pause its timer. Needs <ToastProvider> around the app.",
       sections: [
@@ -420,7 +512,7 @@ export default function Components() {
                   <ToastCard
                     title="Settings updated"
                     description="Your preferences were applied."
-                    onClose={() => {}}
+                    onClose={() => { }}
                   />
                 </div>
               ),
@@ -433,7 +525,7 @@ export default function Components() {
                     type="success"
                     title="Changes saved"
                     description="Your profile is up to date."
-                    onClose={() => {}}
+                    onClose={() => { }}
                   />
                 </div>
               ),
@@ -446,7 +538,7 @@ export default function Components() {
                     type="error"
                     title="Upload failed"
                     description="Check your connection and try again."
-                    onClose={() => {}}
+                    onClose={() => { }}
                   />
                 </div>
               ),
@@ -459,7 +551,7 @@ export default function Components() {
                     type="info"
                     title="New version available"
                     description="Refresh to get the latest update."
-                    onClose={() => {}}
+                    onClose={() => { }}
                   />
                 </div>
               ),
@@ -485,7 +577,7 @@ export default function Components() {
                     title="Item deleted"
                     description="It will be removed permanently in 30 days."
                     action={{ label: "Undo" }}
-                    onClose={() => {}}
+                    onClose={() => { }}
                   />
                 </div>
               ),
@@ -595,6 +687,7 @@ export default function Components() {
     {
       id: "delete-modal",
       name: "DeleteModal",
+      icon: WarningCircle,
       description:
         "Confirmation dialog for destructive actions. Built on the native <dialog>: focus stays inside, Esc and clicking outside cancel, and focus starts on Cancel so Enter can't delete by accident.",
       sections: [
@@ -651,6 +744,7 @@ export default function Components() {
     {
       id: "modal",
       name: "Modal",
+      icon: AppWindow,
       description:
         "General modal for tables, images, video or any content. Sizes: sm, md, lg, xl. The body scrolls on its own, the header and footer stay put, and below 900px it becomes a bottom sheet. Use ModalTable and ModalMedia for common content.",
       sections: [
@@ -735,51 +829,126 @@ export default function Components() {
     },
   ];
 
+  const countExamples = (c) =>
+    c.sections.reduce((n, sec) => n + sec.items.length, 0);
+  const totalExamples = components.reduce((n, c) => n + countExamples(c), 0);
+
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Components</h1>
-        <p className={styles.lead}>
-          Every reusable component with its variants, sizes and states.
-        </p>
-        <nav className={styles.jump} aria-label="Jump to component">
-          {components.map((c) => (
-            <a key={c.id} href={`#${c.id}`} className={styles.jumpLink}>
-              {c.name}
-            </a>
-          ))}
-        </nav>
+      {/* Hero */}
+      <header className={styles.hero}>
+        <div className={styles.decor} aria-hidden="true">
+          <span className={styles.orb} />
+          <span className={styles.ring} />
+          <span className={styles.pillA} />
+          <span className={styles.pillB} />
+          <span className={styles.dot} />
+        </div>
+
+        <div className={styles.heroBody}>
+          <span className={styles.eyebrow}>
+            <span className={styles.eyebrowDot} aria-hidden="true" />
+            Design system
+          </span>
+          <h1 className={styles.title}>
+            <span className={styles.titleMark}>Components</span>
+          </h1>
+          <p className={styles.lead}>
+            Every reusable component with its variants, sizes and states, in
+            light and dark.
+          </p>
+
+          <ul className={styles.stats} aria-label="Library summary">
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{components.length}</span>
+              <span className={styles.statLabel}>Components</span>
+            </li>
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{totalExamples}</span>
+              <span className={styles.statLabel}>Examples</span>
+            </li>
+            <li className={styles.stat}>
+              <span className={styles.statValue}>2</span>
+              <span className={styles.statLabel}>Themes</span>
+            </li>
+          </ul>
+        </div>
       </header>
 
-      {components.map((c) => (
-        <section
-          key={c.id}
-          id={c.id}
-          className={styles.component}
-          aria-labelledby={`${c.id}-title`}
+      {/* Jump nav: the slot keeps its place, the nav inside follows the scroll */}
+      <div ref={slotRef} className={styles.jumpSlot}>
+        <nav
+          ref={navRef}
+          className={styles.jump}
+          aria-label="Jump to component"
         >
-          <h2 id={`${c.id}-title`} className={styles.componentTitle}>
-            {c.name}
-          </h2>
-          <p className={styles.desc}>{c.description}</p>
+          {components.map((c) => {
+            const Icon = c.icon;
+            const isActive = active === c.id;
+            return (
+              <a
+                key={c.id}
+                href={`#${c.id}`}
+                className={`${styles.jumpLink} ${isActive ? styles.jumpActive : ""}`}
+                aria-current={isActive ? "true" : undefined}
+                onClick={(e) => jumpTo(e, c.id)}
+              >
+                <Icon size={16} weight="bold" aria-hidden="true" />
+                {c.name}
+              </a>
+            );
+          })}
+        </nav>
+      </div>
 
-          {c.sections.map((sec) => (
-            <div key={sec.title} className={styles.block}>
-              <h3 className={styles.blockTitle}>{sec.title}</h3>
-              <div className={styles.card}>
-                <div className={styles.row}>
-                  {sec.items.map((item) => (
-                    <div key={item.label} className={styles.cell}>
-                      <div className={styles.demo}>{item.node}</div>
-                      <code className={styles.label}>{item.label}</code>
-                    </div>
-                  ))}
+      {components.map((c, index) => {
+        const Icon = c.icon;
+        return (
+          <section
+            key={c.id}
+            id={c.id}
+            data-section
+            className={styles.component}
+            aria-labelledby={`${c.id}-title`}
+          >
+            <div className={styles.componentHead}>
+              <span className={styles.iconTile} aria-hidden="true">
+                <Icon size={26} weight="bold" />
+              </span>
+              <div className={styles.headText}>
+                <div className={styles.titleRow}>
+                  <h2 id={`${c.id}-title`} className={styles.componentTitle}>
+                    {c.name}
+                  </h2>
+                  <span className={styles.count}>
+                    {countExamples(c)} examples
+                  </span>
+                </div>
+                <p className={styles.desc}>{c.description}</p>
+              </div>
+              <span className={styles.index} aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+
+            {c.sections.map((sec) => (
+              <div key={sec.title} className={styles.block}>
+                <h3 className={styles.blockTitle}>{sec.title}</h3>
+                <div className={styles.card}>
+                  <div className={styles.row}>
+                    {sec.items.map((item) => (
+                      <div key={item.label} className={styles.cell}>
+                        <div className={styles.demo}>{item.node}</div>
+                        <code className={styles.label}>{item.label}</code>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </section>
-      ))}
+            ))}
+          </section>
+        );
+      })}
 
       <DeleteModal
         open={deleteOpen}
